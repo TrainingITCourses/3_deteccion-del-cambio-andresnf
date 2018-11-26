@@ -1,0 +1,19 @@
+<app-standard
+  (getStatus)="onGetStatus()"
+  (getAgencies)="onGetAgencies()"
+  (getTypes)="onGetTypes()"
+  [appTitle]="appTitle"
+></app-standard>
+
+<div *ngIf="status && status.length">
+    <app-status [statusList]="status" [appTitle]="appTitle"></app-status>
+</div>
+
+<div *ngIf="agencies && agencies.length">
+  <app-agencies [agenciesList]="agencies"></app-agencies>
+</div>
+
+<div *ngIf="types && types.length">
+  <app-types [typesList]="types"></app-types>
+</div>
+

@@ -1,0 +1,13 @@
+<li *ngFor="let item of typesList; let i = index">
+    <app-search-presenter
+        [searchItem]="item"
+        (searchButton) = "onSearch(item.id.toString())"
+    ></app-search-presenter>
+</li>
+
+<div *ngIf="filteredLaunches && filteredLaunches.length">
+      <app-launches
+        [counter]="{length:filteredLaunches.length}"
+        [launches]="filteredLaunches"
+      ></app-launches>
+</div>
