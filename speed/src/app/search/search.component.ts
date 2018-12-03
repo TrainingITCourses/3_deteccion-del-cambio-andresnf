@@ -1,55 +1,31 @@
-import { Status } from './../store/models/status';
-import { Agency } from './../store/models/agency';
-import { Component, Input, ChangeDetectorRef, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Criterio } from './../store/models/criterio';
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../store/api.service';
 
 @Component({
   selector: 'app-search',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnChanges {
+export class SearchComponent implements OnInit {
+  public launches: any[];
+  public filteredLaunches: any[] = [];
+  constructor(private api: ApiService) {}
 
-  @Input() public appTitle;
-  public status: Status[] = [];
-  public agencies: Agency[] = [];
-  public types: any[] = [];
-
-  constructor(private api: ApiService, private cdRef: ChangeDetectorRef) { }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('Changes: ' + changes);
+  ngOnInit() {
   }
 
-  onGetStatus() {
-    this.clearVariables();
-    this.api.getStatusTypes$().subscribe(data => {
-      this.status = data;
-    });
-    this.cdRef.detectChanges();
+  onSearch = (searchCiteria: Criterio) => {
+    console.log('onSearch con criterio', searchCiteria.criterioName, ': ', searchCiteria.criterioValue );
+    const searchName = searchCiteria.criterioName.toLowerCase();
+    const searchValue = searchCiteria.criterioValue;
+    const filteredLaunches = this.api.launches.filter(
+      l =>
+        (((searchName === 'estado') && (l.status == searchValue) ||
+        ((searchName === 'agencia') && (l.lsp != null) && (l.lsp.id == searchValue)) ||
+        ((searchName === 'tipo') && (l.missions != null) && (l.missions.filter(m => m.type == searchValue)).length > 0)
+        )));
+     this.filteredLaunches = filteredLaunches;
   }
-
-  onGetAgencies() {
-    this.clearVariables();
-    this.api.getAgencies().subscribe(data => {
-      this.agencies = data;
-    });
-    this.cdRef.detectChanges();
-  }
-
-  onGetTypes() {
-    this.clearVariables();
-    this.api.getMissionTypes().subscribe(data => {
-      this.types = data;
-    });
-    this.cdRef.detectChanges();
-  }
-
-  clearVariables() {
-    this.status = [];
-    this.agencies = [];
-    this.types = [];
-  }
-
 }
+

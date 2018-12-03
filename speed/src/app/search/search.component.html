@@ -1,19 +1,12 @@
-<app-standard
-  (getStatus)="onGetStatus()"
-  (getAgencies)="onGetAgencies()"
-  (getTypes)="onGetTypes()"
-  [appTitle]="appTitle"
-></app-standard>
 
-<div *ngIf="status && status.length">
-    <app-status [statusList]="status" [appTitle]="appTitle"></app-status>
-</div>
+      <h1 class="mat-h1">
+        Explore the rockets library.
+      </h1>
+        <app-search-filter (search)="onSearch($event)">
+          </app-search-filter>
 
-<div *ngIf="agencies && agencies.length">
-  <app-agencies [agenciesList]="agencies"></app-agencies>
-</div>
-
-<div *ngIf="types && types.length">
-  <app-types [typesList]="types"></app-types>
-</div>
+  <span *ngIf="filteredLaunches">
+    <app-counter [counter]="{length:filteredLaunches.length, message:'Lanzamientos'}"></app-counter>
+    <app-launches-list [launches]="filteredLaunches"></app-launches-list>
+  </span>
 

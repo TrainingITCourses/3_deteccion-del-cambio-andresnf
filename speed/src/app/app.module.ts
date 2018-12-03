@@ -1,33 +1,25 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LaunchesComponent } from './launches/launches.component';
 import { SearchComponent } from './search/search.component';
-import { SearchPresenterComponent } from './search-presenter/search-presenter.component';
-import { StandardComponent } from './standard/standard.component';
-import { StatusComponent } from './status/status.component';
-import { AgenciesComponent } from './agencies/agencies.component';
-import { TypesComponent } from './types/types.component';
-
+import { SearchFilterComponent } from './search-filter/search-filter.component';
+import { LaunchesListComponent } from './launches-list/launches-list.component';
+import { CounterComponent } from './counter/counter.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LaunchesComponent,
     SearchComponent,
-    SearchPresenterComponent,
-    StandardComponent,
-    StatusComponent,
-    AgenciesComponent,
-    TypesComponent
+    SearchFilterComponent,
+    LaunchesListComponent,
+    CounterComponent
   ],
   imports: [
-    HttpClientModule,
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

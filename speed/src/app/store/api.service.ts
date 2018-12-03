@@ -1,36 +1,45 @@
+import { Launch } from './models/launch';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { Launch } from './models/launch';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Status } from './models/status';
+import { Agency } from './models/agency';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   public launches: Launch[];
-  public statuses: any[];
-  private key = 'launches';
   constructor(private http: HttpClient) {
-    const launches = localStorage.getItem(this.key);
-    if (launches) {
-      this.launches = JSON.parse(launches);
-    }
+
   }
 
-  public getAgencies = (): Observable<any[]> =>
-    this.http
-      .get(environment.url + '/assets/data/agencies.json')
-      .pipe(map((res: any) => res.agencies))
+  /** GET Launch List */
+  public getLaunchList(): Observable<Launch[]> {
+    if (this.launches) {return of(this.launches); }
+    return this.http.get<any[]>('../assets/data/launches.json')
+      .pipe(map((res: any) => res.launches), tap(res => (this.launches = res)));
+  }
 
-  public getMissionTypes = (): Observable<any[]> =>
-    this.http
-      .get(environment.url + '/assets/data/missiontypes.json')
-      .pipe(map((res: any) => res.types))
 
-  public getStatusTypes$ = (): Observable<any[]> =>
-    this.http
-      .get(environment.url + '/assets/data/launchstatus.json')
-      .pipe(map((res: any) => res.types))
+  /** GET Status List */
+  public getStatusList(): Observable<Status[]> {
+      return this.http.get<Status[]>('../assets/data/launchstatus.json')
+      .pipe(map((res: any) => res.types));
+  }
+
+  /** GET Agency List  */
+  public getAgencyList(): Observable<Agency[]> {
+    return this.http.get<Agency[]>('../assets/data/agencies.json')
+      .pipe(map((res: any) => res.agencies));
+  }
+
+  /** GET Type List  */
+  public getTypeList(): Observable<any[]> {
+    return this.http.get<any[]>('../assets/data/missiontypes.json')
+      .pipe(map((res: any) => res.types));
+  }
+
+
 }
