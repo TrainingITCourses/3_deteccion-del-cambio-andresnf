@@ -1,10 +1,11 @@
-import { GetTypeList, GetAgencyList, GetStatusList } from './../store/store.actions';
-import { StoreService } from './../store/store.service';
 import { Launch } from './../store/models/launch';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ApiService } from '../store/api.service';
 import { Status } from '../store/models/status';
 import { Agency } from '../store/models/agency';
+import { Store } from '@ngrx/store';
+import { State } from '../reducers';
+import { ConditionStatus, ConditionAgency, ConditionType } from '../reducers/condition.actions';
 
 
 @Component({
@@ -21,10 +22,10 @@ export class SearchFilterComponent implements OnInit {
   public arrCriterioBusqueda: any[];
   public elementosCombo: any[];
   public criterioName: string;
-  public state: any[];
+  public conditions: any[];
 
 
-  constructor(private api: ApiService, private store: StoreService) {}
+  constructor(private api: ApiService, private store: Store<State>) {}
 
   ngOnInit() {
     this.arrCriterioBusqueda = [
@@ -33,12 +34,16 @@ export class SearchFilterComponent implements OnInit {
       {key: 3, text: 'Tipo'}
   ];
 
-   this.store.select$().subscribe(state => (this.state = state));
+   this.store.select(s => s.condition).subscribe(value => {
+    this.elementosCombo = value.conditions;
+   });
+
    this.getStatusList();
    this.getAgencyList();
    this.getTypeList();
    this.getLaunchList();
   }
+
 
   getLaunchList(): void {
     this.api.getLaunchList().
@@ -68,18 +73,21 @@ export class SearchFilterComponent implements OnInit {
 
     switch (entry.key) {
       case 1:
-        this.store.dispatch(new GetStatusList(this.statuses));
-        this.elementosCombo = this.state;
+        // this.elementosCombo = this.statuses;
+        this.store.dispatch(new ConditionStatus(this.conditions));
+        // this.elementosCombo = this.conditions;
         this.criterioName = this.arrCriterioBusqueda[0].text;
         break;
       case 2:
-        this.store.dispatch(new GetAgencyList(this.agencies));
-        this.elementosCombo = this.state;
+        // this.elementosCombo = this.agencies;
+        this.store.dispatch(new ConditionAgency(this.conditions));
+        // this.elementosCombo = this.conditions;
         this.criterioName = this.arrCriterioBusqueda[1].text;
         break;
       case 3:
-        this.store.dispatch(new GetTypeList(this.types));
-        this.elementosCombo = this.state;
+        // this.elementosCombo = this.types;
+        this.store.dispatch(new ConditionType(this.conditions));
+        // this.elementosCombo = this.conditions;
         this.criterioName = this.arrCriterioBusqueda[2].text;
         break;
       default:

@@ -12,8 +12,6 @@
 <tr>
   <select #selectFilter (change)="search.next({criterioName: criterioName, criterioValue: $event.target.value})">
     <option value="">---Selecciona---</option>
-    <div *ngIf="elementosCombo && elementosCombo.length">
-      <option *ngFor="let elemento of elementosCombo" [value]="elemento.id">{{elemento.name}}</option>
-    </div>
+    <option *ngFor="let elemento of elementosCombo" [value]="elemento.id">{{elemento.name}}</option>
   </select>
 </tr>
