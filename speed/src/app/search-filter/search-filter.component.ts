@@ -1,5 +1,5 @@
 import { Launch } from './../store/models/launch';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectorRef } from '@angular/core';
 import { ApiService } from '../store/api.service';
 import { Status } from '../store/models/status';
 import { Agency } from '../store/models/agency';
@@ -14,7 +14,7 @@ import { ConditionStatus, ConditionAgency, ConditionType } from '../reducers/con
   styleUrls: ['./search-filter.component.css']
 })
 export class SearchFilterComponent implements OnInit {
-  @Output() public search = new EventEmitter<string>();
+  @Output() public search = new EventEmitter<any>();
   public statuses: Status[];
   public agencies: Agency[];
   public types: any[];
@@ -23,9 +23,11 @@ export class SearchFilterComponent implements OnInit {
   public elementosCombo: any[];
   public criterioName: string;
   public conditions: any[];
+  public entry: any = null;
+  public updateVaribles: Boolean = false;
 
 
-  constructor(private api: ApiService, private store: Store<State>) {}
+  constructor(private api: ApiService, private store: Store<State>, private cdRef: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.arrCriterioBusqueda = [
@@ -35,15 +37,15 @@ export class SearchFilterComponent implements OnInit {
   ];
 
    this.store.select(s => s.condition).subscribe(value => {
-    this.elementosCombo = value.conditions;
+    if (this.entry != null) {
+      this.elementosCombo = value.conditions;
+      this.updateVaribles = true;
+      this.onRadioButtonChange(this.entry);
+    }
    });
 
-   this.getStatusList();
-   this.getAgencyList();
-   this.getTypeList();
    this.getLaunchList();
   }
-
 
   getLaunchList(): void {
     this.api.getLaunchList().
@@ -51,47 +53,46 @@ export class SearchFilterComponent implements OnInit {
         this.launches = data);
   }
 
-  getStatusList(): void {
-    this.api.getStatusList().
-    subscribe(data =>
-        this.statuses = data);
-  }
-
-  getAgencyList(): void {
-    this.api.getAgencyList().
-    subscribe(data =>
-        this.agencies = data);
-  }
-
-  getTypeList(): void {
-    this.api.getTypeList().
-    subscribe(data =>
-        this.types = data);
-  }
-
   onRadioButtonChange(entry) {
 
+    this.entry = entry;
+    if (!this.updateVaribles) {
+      this.dispatchAction(entry);
+    } else {
+      this.cdRef.detectChanges();
+      switch (entry.key) {
+        case 1:
+          this.criterioName = this.arrCriterioBusqueda[0].text;
+          this.updateVaribles = false;
+          break;
+        case 2:
+          this.criterioName = this.arrCriterioBusqueda[1].text;
+          this.updateVaribles = false;
+          break;
+        case 3:
+          this.criterioName = this.arrCriterioBusqueda[2].text;
+          this.updateVaribles = false;
+          break;
+        default:
+        break;
+      }
+    }
+  }
+
+  dispatchAction(entry) {
     switch (entry.key) {
       case 1:
-        // this.elementosCombo = this.statuses;
         this.store.dispatch(new ConditionStatus(this.conditions));
-        // this.elementosCombo = this.conditions;
-        this.criterioName = this.arrCriterioBusqueda[0].text;
         break;
       case 2:
-        // this.elementosCombo = this.agencies;
         this.store.dispatch(new ConditionAgency(this.conditions));
-        // this.elementosCombo = this.conditions;
-        this.criterioName = this.arrCriterioBusqueda[1].text;
         break;
       case 3:
-        // this.elementosCombo = this.types;
         this.store.dispatch(new ConditionType(this.conditions));
-        // this.elementosCombo = this.conditions;
-        this.criterioName = this.arrCriterioBusqueda[2].text;
         break;
       default:
       break;
     }
   }
+
 }

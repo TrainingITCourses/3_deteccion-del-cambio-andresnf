@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { ConditionEffects } from 'src/app/reducers/condition.effects';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { ConditionEffects } from 'src/app/reducers/condition.effects';
     !environment.production
       ? StoreDevtoolsModule.instrument()
       : [],
-    EffectsModule.forRoot([ConditionEffects])
+    EffectsModule.forRoot([ConditionEffects]),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
